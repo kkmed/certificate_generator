@@ -1,45 +1,182 @@
 from PIL import Image, ImageDraw, ImageFont
-import os
+from student_logic import PLACEHOLDERS, FONTS, place_text, draw_background
 
-def get_unique_filename(base_name):
-    count = 1
-    filename = f"{base_name}.jpeg"
-    while os.path.exists(f"output/{filename}"):
-        count += 1
-        filename = f"{base_name}_{count}.jpeg"
-    return filename
 
-def get_fitting_font(draw, text, max_width, font_path,start_size):
-    font_size = start_size
-    while font_size > 10:
-        font = ImageFont.truetype(font_path,font_size)
-        bbox = draw.textbbox((0,0),text,font=font)
-        text_width = bbox[2] - bbox[0]
-        if text_width <= max_width:
-            return font
-        font_size -= 2
+# -------------------------------
+# WIDTH LIMITS
+# -------------------------------
+DEFAULT_WIDTHS = {
+    "recipient_name": 900,
+    "certificate_title": 1000,
+    "event_name": 800,
+    "body_line": 1000
+}
+
+
+# -------------------------------
+# FONT LOADER
+# -------------------------------
+def load_font(font_family, size):
+    paths = {
+        "serif": "fonts/DejaVuSerif.ttf",
+        "sans": "fonts/DejaVuSans.ttf"
+    }
+    return ImageFont.truetype(paths.get(font_family, paths["serif"]), size)
+
+
+# -------------------------------
+# AUTO FONT FIT
+# -------------------------------
+def get_fitting_font(draw, text, font, max_width):
+    size = font.size
+
+    while size > 10:
+        f = font.font_variant(size=size)
+        bbox = draw.textbbox((0, 0), text, font=f)
+        if bbox[2] - bbox[0] <= max_width:
+            return f
+        size -= 2
+
     return font
 
 
-def generate_certificate(name,template_path,output_path):
-    img = Image.open(template_path)
+# -------------------------------
+# APPLY STYLE
+# -------------------------------
+def apply_style(key, base_font, base_color, style):
+    if not style or key not in style:
+        return base_font, base_color
+
+    s = style[key]
+
+    font = base_font
+
+    if "font_family" in s or "font_size" in s:
+        font = load_font(
+            s.get("font_family", "serif"),
+            s.get("font_size", base_font.size)
+        )
+
+    color = s.get("color", base_color)
+
+    return font, color
+
+
+# -------------------------------
+# BACKGROUND HANDLER
+# -------------------------------
+def create_background(image_path):
+
+    # ORIGINAL TEMPLATE (code-based)
+    if image_path == "classic":
+        img = Image.new("RGB", (1500, 990), (255, 255, 255))
+        draw = ImageDraw.Draw(img)
+        draw_background(draw)
+        return img
+
+    # IMAGE TEMPLATE
+    else:
+        return Image.open(image_path).convert("RGB")
+
+
+# -------------------------------
+# MAIN GENERATOR
+# -------------------------------
+def generate_certificate(data, image_path, output_path, style=None, layout=None):
+
+    img = create_background(image_path)
     draw = ImageDraw.Draw(img)
-    max_width = img.width - 200
-    font = get_fitting_font(draw,name,max_width,"fonts/DejaVuSans.ttf",80)
 
-    bbox = draw.textbbox((0,0),name,font=font)
-    text_width = bbox[2] - bbox[0]
+    for key, (x, y, anchor, font_key, color) in PLACEHOLDERS.items():
 
-    x = (img.width - text_width) // 2
-    y = 320
+        text = data.get(key)
+        if not text:
+            continue
 
-    draw.text((x,y),name,fill="black",font=font)
+        base_font = FONTS[font_key]
+
+        # apply style
+        font, color = apply_style(key, base_font, color, style)
+
+        # layout adjustment
+        if layout and key in layout:
+            x = layout[key].get("x", x)
+            y = layout[key].get("y", y)
+
+        max_width = DEFAULT_WIDTHS.get(key, 800)
+        font = get_fitting_font(draw, text, font, max_width)
+
+        place_text(draw, x, y, text, font, color, anchor)
+
     img.save(output_path)
+    print(f"✅ Certificate generated → {output_path}")
+    
+data = {
+    # HEADER
+    "organization_name": "ABC University",
+    "organization_tagline": "Excellence in Education",
 
-students = ["Alice","JohnYesPapaEatingSugarNoPapa","Alice"]
-for name in students:
-    if not name or not name.strip():
-        continue
-    name = name.strip()
-    filename = get_unique_filename(name)
-    generate_certificate(name,"template.jpeg",f"output/{filename}")
+    # TITLE SECTION
+    "certificate_title": "Certificate of Excellence",
+    "subtitle": "This certificate is proudly presented to",
+
+    # MAIN NAME
+    "recipient_name": "Krithi Meda",
+
+    # BODY
+    "body_line": "for outstanding performance in",
+    "event_name": "AI Workshop 2026",
+    "organized_by": "organized by ABC University",
+
+    # DETAILS (BOTTOM SECTION)
+    "date_label": "Date",
+    "date_value": "May 2026",
+
+    "venue_label": "Venue",
+    "venue_value": "Hyderabad",
+
+    "cert_id_label": "Certificate No.",
+    "cert_id_value": "CERT123",
+
+    # SIGNATURES
+    "dignitary_1_name": "Dr. Rao",
+    "dignitary_1_title": "Director",
+
+    "dignitary_2_name": "Prof. Sharma",
+    "dignitary_2_title": "Dean",
+
+    "dignitary_3_name": "Ms. Iyer",
+    "dignitary_3_title": "Coordinator",
+
+    # FOOTER
+    "footer_text": "abc@university.com · www.abcuniversity.com"
+}
+
+image_path = "template3.png"
+
+style = {
+    "certificate_title": {
+        "font_family": "serif",
+        "font_size": 65,
+        "color": (80, 80, 80)
+    },
+
+    "recipient_name": {
+        "font_family": "serif",
+        "font_size": 95,
+        "color": (150, 110, 40)
+    }
+}
+
+layout = {
+    "recipient_name": {"y": 350},
+    "certificate_title": {"y": 180}
+}
+
+generate_certificate(
+    data,
+    "classic",
+    "output/certificate.png",
+    style,
+    layout
+)

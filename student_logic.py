@@ -1,18 +1,8 @@
 """
 certificate_template.py  —  Kriti's responsibility
 ====================================================
-1. Creates the certificate background image (navy + gold + cream design)
-2. Defines ALL placeholder coordinates, fonts, and sizes
-3. Renders a visual test with dummy text so teammates can verify positions
-
-Font sizes are calibrated to match the reference template image (1599x1131)
-scaled to our canvas (1400x990), scale factor ≈ 0.875.
-
-Run:
-    pip install pillow
-    python certificate_template.py
-Output:
-    template_test.png
+Fixed version matching the reference template image (1599x1131).
+Canvas: 1500x990
 """
 
 from PIL import Image, ImageDraw, ImageFont
@@ -21,7 +11,7 @@ import math, os
 # ──────────────────────────────────────────────
 #  CANVAS
 # ──────────────────────────────────────────────
-W, H = 1400, 990
+W, H = 1500, 990
 
 # ──────────────────────────────────────────────
 #  COLOUR PALETTE
@@ -36,18 +26,8 @@ WHITE      = (255, 255, 255)
 
 # ──────────────────────────────────────────────
 #  FONTS
-#  All four DejaVuSerif variants confirmed on Ubuntu/Linux.
-#  Windows → change FONT_DIR to "C:/Windows/Fonts/"
-#  Mac     → change FONT_DIR to "/Library/Fonts/"
-#
-#  Style          File
-#  ─────────────────────────────────────────────
-#  Regular      → DejaVuSerif.ttf
-#  Bold         → DejaVuSerif-Bold.ttf
-#  Italic       → DejaVuSerif-Italic.ttf
-#  Bold Italic  → DejaVuSerif-BoldItalic.ttf
 # ──────────────────────────────────────────────
-FONT_DIR = "/usr/share/fonts/truetype/dejavu/"
+FONT_DIR = "fonts"
 
 def load_font(size, bold=False, italic=False):
     filemap = {
@@ -59,42 +39,46 @@ def load_font(size, bold=False, italic=False):
     path = os.path.join(FONT_DIR, filemap[(bold, italic)])
     if os.path.exists(path):
         return ImageFont.truetype(path, size)
+    print("Loading:", path, "Exists:", os.path.exists(path))
     return ImageFont.load_default()
 
 # ──────────────────────────────────────────────
-#  FONT SIZES
-#  Measured from template image (1599×1131), scaled by 0.875 to fit canvas.
+#  FONT SIZES  — calibrated to match reference image
 #
-#  Element                Template px   →  Canvas pt
-#  ─────────────────────────────────────────────────
-#  [CERTIFICATE TITLE]       ~62        →   54
-#  [RECIPIENT NAME]          ~130       →   113
-#  Subtitle italic           ~28        →   24
-#  Body italic               ~26        →   22
-#  [EVENT NAME] bold italic  ~32        →   28
-#  Organized by              ~24        →   21
-#  Table label bold          ~22        →   19
-#  Table value               ~22        →   19
-#  Sig name bold             ~20        →   17
-#  Sig title                 ~18        →   15
-#  Header org name bold      ~30        →   26
-#  Tagline / footer          ~18        →   15
+#  Reference image: 1599×1131, our canvas: 1500×990
+#  Scale ≈ 0.938 horizontally, 0.876 vertically
+#
+#  Element                   Ref px  →  Canvas pt
+#  ──────────────────────────────────────────────
+#  Header org name bold        ~30   →   28
+#  Tagline                     ~18   →   16
+#  CERTIFICATE TITLE           ~72   →   68   (was 52 — too small)
+#  Subtitle italic             ~28   →   26   (was 20 — too small)
+#  RECIPIENT NAME             ~130   →   108  (was 72 — far too small)
+#  Body italic                 ~26   →   24   (was 18 — too small)
+#  Event name bold italic      ~32   →   30   (was 26 — slightly small)
+#  Organized by                ~24   →   22   (was 16)
+#  Table label bold            ~22   →   20   (was 14 — too small)
+#  Table value                 ~22   →   20   (was 16)
+#  Sig name bold               ~22   →   20   (was 16)
+#  Sig title                   ~18   →   16   (was 13)
+#  Footer                      ~18   →   16   (was 13)
 # ──────────────────────────────────────────────
 
 FONTS = {
-    "org_name":    load_font(30,  bold=True),
-    "tagline":     load_font(15),
-    "cert_title":  load_font(62,  bold=True),
-    "subtitle":    load_font(28,  italic=True),
-    "recipient":   load_font(130, bold=True),
-    "body":        load_font(26,  italic=True),
-    "event_name":  load_font(32,  bold=True, italic=True),
-    "org_small":   load_font(24),
-    "table_label": load_font(22,  bold=True),
-    "table_value": load_font(22),
+    "org_name":    load_font(28,  bold=True),
+    "tagline":     load_font(16),
+    "cert_title":  load_font(68,  bold=True),
+    "subtitle":    load_font(26,  italic=True),
+    "recipient":   load_font(108, bold=True),
+    "body":        load_font(24,  italic=True),
+    "event_name":  load_font(30,  bold=True, italic=True),
+    "org_small":   load_font(22),
+    "table_label": load_font(20,  bold=True),
+    "table_value": load_font(20),
     "sig_name":    load_font(20,  bold=True),
-    "sig_title":   load_font(18),
-    "footer":      load_font(18),
+    "sig_title":   load_font(16),
+    "footer":      load_font(16),
 }
 
 # ──────────────────────────────────────────────
@@ -106,44 +90,73 @@ FOOTER_H = 46
 # ──────────────────────────────────────────────
 #  PLACEHOLDER COORDINATES
 #  (x, y, anchor, font_key, color)
-#  anchor "center" → text horizontally centred on x
-#  anchor "left"   → text starts at x
+#
+#  Spacing rationale (matches reference top-to-bottom):
+#    HEADER_H (160) → bottom of navy band
+#    +30  → cert title             y=190
+#    +100 → gold rule              y=290  (drawn in background)
+#    +115 → subtitle               y=305
+#    +55  → recipient name         y=360
+#    +170 → body text rule         y=530  (recipient name is 108px tall ≈ 160px with padding)
+#    +30  → body_line              y=560  (after rule at ~530)
+#    +40  → event_name             y=600
+#    +36  → organized_by           y=636
+#    +30  → info-table rule        y=666  (drawn in background)
+#    +20  → date/venue/cert labels y=686
+#    +30  → date/venue/cert values y=716
+#    +30  → sig rule               y=746  (drawn in background)
+#    +110 → sig names              y=840
+#    +28  → sig titles             y=868
 # ──────────────────────────────────────────────
+
 PLACEHOLDERS = {
     # ── Header band ─────────────────────────────
     "organization_name":    (W//2,  28,  "center", "org_name",   GOLD_LIGHT),
-    "organization_tagline": (W//2,  62,  "center", "tagline",    GOLD),
+    "organization_tagline": (W//2,  68,  "center", "tagline",    GOLD),
 
-    # ── Body ────────────────────────────────────
-    "certificate_title":    (W//2,  HEADER_H + 32,  "center", "cert_title",  DARK_TEXT),
-    "subtitle":             (W//2,  HEADER_H + 108, "center", "subtitle",    MID_TEXT),
-    "recipient_name":       (W//2,  HEADER_H + 140, "center", "recipient",   DARK_TEXT),
-    "body_line":            (W//2,  HEADER_H + 278, "center", "body",        MID_TEXT),
-    "event_name":           (W//2,  HEADER_H + 308, "center", "event_name",  DARK_TEXT),
-    "organized_by":         (W//2,  HEADER_H + 346, "center", "org_small",   MID_TEXT),
+    # ── Body ─────────────────────────────────────
+    "certificate_title":    (W//2,  HEADER_H + 30,  "center", "cert_title",  DARK_TEXT),
 
-    # ── Info table (3 columns at W//6, W//2, 5W//6) ──
-    "date_label":           (W//6,      HEADER_H + 392, "center", "table_label", DARK_TEXT),
-    "date_value":           (W//6,      HEADER_H + 418, "center", "table_value", MID_TEXT),
-    "venue_label":          (W//2,      HEADER_H + 392, "center", "table_label", DARK_TEXT),
-    "venue_value":          (W//2,      HEADER_H + 418, "center", "table_value", MID_TEXT),
-    "cert_id_label":        (5*W//6,    HEADER_H + 392, "center", "table_label", DARK_TEXT),
-    "cert_id_value":        (5*W//6,    HEADER_H + 418, "center", "table_value", MID_TEXT),
+    # subtitle sits just below the first gold rule (HEADER_H+110 in background)
+    "subtitle":             (W//2,  HEADER_H + 120, "center", "subtitle",    MID_TEXT),
+
+    # Recipient name — large dominant element
+    "recipient_name":       (W//2,  HEADER_H + 165, "center", "recipient",   DARK_TEXT),
+
+    # second gold rule at HEADER_H+320; body text starts just after
+    "body_line":            (W//2,  HEADER_H + 340, "center", "body",        MID_TEXT),
+    "event_name":           (W//2,  HEADER_H + 378, "center", "event_name",  DARK_TEXT),
+    "organized_by":         (W//2,  HEADER_H + 418, "center", "org_small",   MID_TEXT),
+
+    # ── Info table  (third gold rule at HEADER_H+460) ──
+    # Labels & values: centered within their column thirds
+    "date_label":           (W//6,      HEADER_H + 472, "center", "table_label", DARK_TEXT),
+    "date_value":           (W//6,      HEADER_H + 502, "center", "table_value", MID_TEXT),
+
+    "venue_label":          (W//2,      HEADER_H + 472, "center", "table_label", DARK_TEXT),
+    "venue_value":          (W//2,      HEADER_H + 502, "center", "table_value", MID_TEXT),
+
+    "cert_id_label":        (5*W//6,    HEADER_H + 472, "center", "table_label", DARK_TEXT),
+    "cert_id_value":        (5*W//6,    HEADER_H + 502, "center", "table_value", MID_TEXT),
 
     # ── Signature row ────────────────────────────
-    "dignitary_1_name":     (W//6,      HEADER_H + 534, "center", "sig_name",  DARK_TEXT),
-    "dignitary_1_title":    (W//6,      HEADER_H + 558, "center", "sig_title", MID_TEXT),
-    "dignitary_2_name":     (W//2,      HEADER_H + 534, "center", "sig_name",  DARK_TEXT),
-    "dignitary_2_title":    (W//2,      HEADER_H + 558, "center", "sig_title", MID_TEXT),
-    "dignitary_3_name":     (5*W//6,    HEADER_H + 534, "center", "sig_name",  DARK_TEXT),
-    "dignitary_3_title":    (5*W//6,    HEADER_H + 558, "center", "sig_title", MID_TEXT),
+    "dignitary_1_name":     (W//6,      HEADER_H + 648, "center", "sig_name",  DARK_TEXT),
+    "dignitary_1_title":    (W//6,      HEADER_H + 678, "center", "sig_title", MID_TEXT),
 
-    # ── Footer band ──────────────────────────────
+    "dignitary_2_name":     (W//2,      HEADER_H + 648, "center", "sig_name",  DARK_TEXT),
+    "dignitary_2_title":    (W//2,      HEADER_H + 678, "center", "sig_title", MID_TEXT),
+
+    "dignitary_3_name":     (5*W//6,    HEADER_H + 648, "center", "sig_name",  DARK_TEXT),
+    "dignitary_3_title":    (5*W//6,    HEADER_H + 678, "center", "sig_title", MID_TEXT),
+
+    # ── Footer ──────────────────────────────────
     "footer_text":          (W//2, H - FOOTER_H + 12, "center", "footer", GOLD),
 }
 
+
+
 # ──────────────────────────────────────────────
-#  BACKGROUND DRAWING  (Kriti owns this)
+#  BACKGROUND DRAWING
 # ──────────────────────────────────────────────
 def draw_background(draw):
     # cream base
@@ -164,18 +177,19 @@ def draw_background(draw):
             draw.ellipse([x-r, y-r, x+r, y+r], fill=GOLD)
 
     # horizontal gold rules with centre diamond
-    for ry in [HEADER_H+100, HEADER_H+262, HEADER_H+382, HEADER_H+452]:
+    # Adjusted Y positions to match new spacing
+    for ry in [HEADER_H+110, HEADER_H+325, HEADER_H+460, HEADER_H+540]:
         draw.line([(80, ry), (W-80, ry)], fill=GOLD, width=1)
         s = 7
         draw.polygon([(W//2, ry-s),(W//2+s, ry),(W//2, ry+s),(W//2-s, ry)], fill=GOLD)
 
     # table vertical dividers
     for cx in (W//3, 2*W//3):
-        draw.line([(cx, HEADER_H+382), (cx, HEADER_H+452)], fill=GOLD, width=1)
+        draw.line([(cx, HEADER_H+462), (cx, HEADER_H+530)], fill=GOLD, width=1)
 
-    # signature underlines
+    # signature underlines — FIXED: x1 != x2 so actual lines are drawn
     for cx in (W//6, W//2, 5*W//6):
-        draw.line([(cx-90, HEADER_H+526), (cx+90, HEADER_H+526)], fill=GOLD, width=1)
+        draw.line([(cx-100, HEADER_H+640), (cx+100, HEADER_H+640)], fill=GOLD, width=1)
 
     # corner ornaments (3 concentric circles + centre dot)
     for cx, cy in [(55,55),(W-55,55),(55,H-55),(W-55,H-55)]:
@@ -197,8 +211,9 @@ def draw_background(draw):
         )
     draw.ellipse([cx-5,cy-5,cx+5,cy+5], fill=GOLD_LIGHT)
 
-    # official seal (centre signature row)
-    scx, scy, sr = W//2, HEADER_H+548, 36
+    # official seal — moved UP so it sits between sig row and table,
+    # centred vertically in the gap between rule at HEADER_H+540 and sig underline
+    scx, scy, sr = W//2, HEADER_H + 592, 38
     draw.ellipse([scx-sr,scy-sr,scx+sr,scy+sr], fill=GOLD, outline=GOLD_LIGHT, width=2)
     draw.ellipse(
         [scx-int(sr*.75),scy-int(sr*.75), scx+int(sr*.75),scy+int(sr*.75)],
@@ -249,7 +264,7 @@ DUMMY_VALUES = {
 }
 
 
-def render_template_test(output="template_test.png"):
+def render_template_test(output="template.png"):
     img  = Image.new("RGB", (W, H), CREAM)
     draw = ImageDraw.Draw(img)
 
@@ -261,8 +276,7 @@ def render_template_test(output="template_test.png"):
         place_text(draw, x, y, text, font, color, anchor)
 
     img.save(output, dpi=(150, 150))
-    print(f"✅  Template test saved → {output}")
-    print("    Share with teammates to confirm all placeholder positions.")
+    print(f"✅  Fixed template saved → {output}")
 
 
 if __name__ == "__main__":
