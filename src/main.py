@@ -2,7 +2,6 @@ from reader import read_csv_file
 from validator import validate_data
 from formatter import format_data
 
-# 🔹 Manual Input Function
 def manual_input():
     data = []
     n = int(input("Enter number of records: "))
@@ -21,7 +20,6 @@ def manual_input():
     return data
 
 
-# 🔹 Main Program
 def main():
     choice = input("1. Read CSV\n2. Manual Input\nEnter choice: ")
 
@@ -39,6 +37,5 @@ def main():
         print(item)
 
 
-# 🔹 Entry Point
 if __name__ == "__main__":
     main()
