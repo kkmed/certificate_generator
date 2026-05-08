@@ -1,7 +1,11 @@
-import json
+import csv
 
 
+# -------------------------------
+# MANUAL INPUT
+# -------------------------------
 def read_manual_input():
+
     return {
         "organization_name": input("Organization Name: "),
         "organization_tagline": input("Tagline: "),
@@ -14,10 +18,21 @@ def read_manual_input():
     }
 
 
-def read_json_file(file_path):
+# -------------------------------
+# READ CSV FILE
+# -------------------------------
+def read_csv_file(file_path):
+
     try:
-        with open(file_path, "r") as file:
-            return json.load(file)
+
+        with open(file_path, mode="r") as file:
+
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                return row
+
     except Exception as e:
-        print("Error reading JSON:", e)
-        return {}
+        print("Error reading CSV:", e)
+
+    return {}
