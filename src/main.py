@@ -1,40 +1,64 @@
-from reader import read_csv_file
+from reader import read_manual_input, read_json_file
 from validator import validate_data
 from formatter import format_data
+from certificate_generator import generate_certificate
 
-def manual_input():
-    data = []
-    n = int(input("Enter number of records: "))
 
-    for i in range(n):
-        name = input("Enter name: ")
-        age = input("Enter age: ")
-        email = input("Enter email: ")
+style = {
+    "certificate_title": {
+        "font_family": "serif",
+        "font_size": 65,
+        "color": (80, 80, 80)
+    },
 
-        data.append({
-            "name": name,
-            "age": age,
-            "email": email
-        })
+    "recipient_name": {
+        "font_family": "serif",
+        "font_size": 95,
+        "color": (150, 110, 40)
+    }
+}
 
-    return data
+
+layout = {
+    "recipient_name": {"y": 350},
+    "certificate_title": {"y": 180}
+}
 
 
 def main():
-    choice = input("1. Read CSV\n2. Manual Input\nEnter choice: ")
+
+    print("1. Manual Input")
+    print("2. Read JSON File")
+
+    choice = input("Enter choice: ")
 
     if choice == "1":
-        path = input("Enter CSV file path: ")
-        data = read_csv_file(path)
+        data = read_manual_input()
+
+    elif choice == "2":
+        path = input("Enter JSON file path: ")
+        data = read_json_file(path)
+
     else:
-        data = manual_input()
+        print("Invalid choice")
+        return
 
-    validated = validate_data(data)
-    formatted = format_data(validated)
+    # validate
+    if not validate_data(data):
+        print("Validation failed")
+        return
 
-    print("\nFinal Processed Data:")
-    for item in formatted:
-        print(item)
+    # format
+    formatted_data = format_data(data)
+
+    # generate certificate
+    generate_certificate(
+        formatted_data,
+        "classic",
+        "output/certificate.png",
+        style,
+        layout
+    )
 
 
 if __name__ == "__main__":
