@@ -173,7 +173,9 @@ layout = {
     "certificate_title": {"y": 180}
 }
 
-generate_certificate(
+
+if __name__ == "__main__":
+    generate_certificate(
     data,
     "classic",
     "output/certificate.png",
