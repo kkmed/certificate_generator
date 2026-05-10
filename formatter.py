@@ -1,13 +1,17 @@
-def format_data(data):
+def format_data(records):
 
-    formatted = {}
+    formatted = []
 
-    for key, value in data.items():
+    for r in records:
 
-        formatted[key] = value.strip()
+        formatted.append({
 
-    # special formatting
-    formatted["recipient_name"] = formatted["recipient_name"].title()
-    formatted["organization_name"] = formatted["organization_name"].title()
+            "Name": r["name"].strip().title(),
+
+            "Age": int(r["age"]),
+
+            "Email": r["email"].strip().lower()
+
+        })
 
     return formatted

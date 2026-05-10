@@ -13,17 +13,20 @@ from emailer import send_email
 # STEP 1 → READ CSV
 records = read_csv_file("students.csv")
 
+
 # STEP 2 → VALIDATE DATA
 valid_records = validate_data(records)
 
+
 # STEP 3 → FORMAT DATA
 formatted_records = format_data(valid_records)
+
 
 # STEP 4 → CREATE OUTPUT FOLDER
 output_folder = create_output_folder()
 
 
-# STEP 5 → LOOP THROUGH ALL STUDENTS
+# STEP 5 → LOOP THROUGH STUDENTS
 for index, student in enumerate(formatted_records, start=1):
 
     # GENERATE CERTIFICATE ID
@@ -86,9 +89,9 @@ for index, student in enumerate(formatted_records, start=1):
         output_path
     )
 
-    print(f"Certificate generated for {student['Name']}")
+    print(f"\nCertificate generated for {student['Name']}")
 
-    
+
     # SEND EMAIL
     send_email(
         student["Email"],
@@ -96,3 +99,4 @@ for index, student in enumerate(formatted_records, start=1):
         output_path
     )
 
+    

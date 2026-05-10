@@ -25,14 +25,20 @@ def read_csv_file(file_path):
 
     try:
 
+        records = []
+
         with open(file_path, mode="r") as file:
 
             reader = csv.DictReader(file)
 
             for row in reader:
-                return row
+
+                records.append(row)
+
+        return records
 
     except Exception as e:
+
         print("Error reading CSV:", e)
 
-    return {}
+        return []
