@@ -1,14 +1,18 @@
 import smtplib
+import os
 
 from email.message import EmailMessage
 
 
 def send_email(receiver_email, receiver_name, certificate_path):
 
-    sender_email = "savithareddy.rajidi@gmail.com"
+    sender_email = os.environ.get("EMAIL_SENDER")
 
-    app_password = "wxbu wxhc ccpn lluh"
-
+    app_password = os.environ.get("EMAIL_PASSWORD")
+    
+    if not sender_email or not app_password:
+        print("Error: EMAIL_SENDER and EMAIL_PASSWORD must be set in the .env file. Could not send email.")
+        return
 
     # CREATE EMAIL
     msg = EmailMessage()

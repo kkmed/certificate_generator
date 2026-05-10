@@ -18,8 +18,8 @@ DEFAULT_WIDTHS = {
 # -------------------------------
 def load_font(font_family, size):
     paths = {
-        "serif": "fonts/DejaVuSerif.ttf",
-        "sans": "fonts/DejaVuSans.ttf"
+        "serif": "assets/fonts/DejaVuSerif.ttf",
+        "sans": "assets/fonts/DejaVuSans.ttf"
     }
     return ImageFont.truetype(paths.get(font_family, paths["serif"]), size)
 
@@ -111,74 +111,109 @@ def generate_certificate(data, image_path, output_path, style=None, layout=None)
     img.save(output_path)
     print(f"✅ Certificate generated → {output_path}")
     
-data = {
-    # HEADER
-    "organization_name": "ABC University",
-    "organization_tagline": "Excellence in Education",
-
-    # TITLE SECTION
-    "certificate_title": "Certificate of Excellence",
-    "subtitle": "This certificate is proudly presented to",
-
-    # MAIN NAME
-    "recipient_name": "Krithi Meda",
-
-    # BODY
-    "body_line": "for outstanding performance in",
-    "event_name": "AI Workshop 2026",
-    "organized_by": "organized by ABC University",
-
-    # DETAILS (BOTTOM SECTION)
-    "date_label": "Date",
-    "date_value": "May 2026",
-
-    "venue_label": "Venue",
-    "venue_value": "Hyderabad",
-
-    "cert_id_label": "Certificate No.",
-    "cert_id_value": "CERT123",
-
-    # SIGNATURES
-    "dignitary_1_name": "Dr. Rao",
-    "dignitary_1_title": "Director",
-
-    "dignitary_2_name": "Prof. Sharma",
-    "dignitary_2_title": "Dean",
-
-    "dignitary_3_name": "Ms. Iyer",
-    "dignitary_3_title": "Coordinator",
-
-    # FOOTER
-    "footer_text": "abc@university.com · www.abcuniversity.com"
-}
-
-image_path = "template3.png"
-
-style = {
-    "certificate_title": {
-        "font_family": "serif",
-        "font_size": 65,
-        "color": (80, 80, 80)
+TEMPLATE_CONFIGS = {
+    "1": {
+        "description": "Template 1: Minimalist Layout",
+        "image_path": "templates/template.png",
+        "layout": {},
+        "style": {}
     },
-
-    "recipient_name": {
-        "font_family": "serif",
-        "font_size": 95,
-        "color": (150, 110, 40)
+    "2": {
+        "description": "Template 2: Ornate Layout",
+        "image_path": "templates/template2.png",
+        "layout": {},
+        "style": {}
+    },
+    "3": {
+        "description": "Template 3: Corporate Layout (Custom positioning)",
+        "image_path": "templates/template3.png",
+        "layout": {
+            "recipient_name": {"y": 350},
+            "certificate_title": {"y": 180}
+        },
+        "style": {
+            "certificate_title": {
+                "font_family": "serif",
+                "font_size": 65,
+                "color": (80, 80, 80)
+            },
+            "recipient_name": {
+                "font_family": "serif",
+                "font_size": 95,
+                "color": (150, 110, 40)
+            }
+        }
     }
 }
 
-layout = {
-    "recipient_name": {"y": 350},
-    "certificate_title": {"y": 180}
-}
-
-
 if __name__ == "__main__":
+    
+    data = {
+        # HEADER
+        "organization_name": "ABC University",
+        "organization_tagline": "Excellence in Education",
+
+        # TITLE SECTION
+        "certificate_title": "Certificate of Excellence",
+        "subtitle": "This certificate is proudly presented to",
+
+        # MAIN NAME
+        "recipient_name": "Krithi Meda",
+
+        # BODY
+        "body_line": "for outstanding performance in",
+        "event_name": "AI Workshop 2026",
+        "organized_by": "organized by ABC University",
+
+        # DETAILS (BOTTOM SECTION)
+        "date_label": "Date",
+        "date_value": "May 2026",
+
+        "venue_label": "Venue",
+        "venue_value": "Hyderabad",
+
+        "cert_id_label": "Certificate No.",
+        "cert_id_value": "CERT123",
+
+        # SIGNATURES
+        "dignitary_1_name": "Dr. Rao",
+        "dignitary_1_title": "Director",
+
+        "dignitary_2_name": "Prof. Sharma",
+        "dignitary_2_title": "Dean",
+
+        "dignitary_3_name": "Ms. Iyer",
+        "dignitary_3_title": "Coordinator",
+
+        # FOOTER
+        "footer_text": "abc@university.com · www.abcuniversity.com"
+    }
+
+    image_path = "template3.png"
+
+    style = {
+        "certificate_title": {
+            "font_family": "serif",
+            "font_size": 65,
+            "color": (80, 80, 80)
+        },
+
+        "recipient_name": {
+            "font_family": "serif",
+            "font_size": 95,
+            "color": (150, 110, 40)
+        }
+    }
+
+    layout = {
+        "recipient_name": {"y": 350},
+        "certificate_title": {"y": 180}
+    }
+
     generate_certificate(
-    data,
-    "classic",
-    "output/certificate.png",
-    style,
-    layout
-)
+        data,
+        "classic",
+        "output/certificate.png",
+        style,
+        layout
+    )

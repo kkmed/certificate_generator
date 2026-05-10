@@ -1,0 +1,21 @@
+{
+    "organization_name": "ABC University",
+    "organization_tagline": "Excellence in Education",
+    "certificate_title": "Certificate of Excellence",
+    "subtitle": "This certificate is proudly presented to",
+    "body_line": "for outstanding performance in",
+    "event_name": "Tech Workshop 2026",
+    "organized_by": "organized by ABC University",
+    "date_label": "Date",
+    "date_value": "May 2026",
+    "venue_label": "Venue",
+    "venue_value": "Hyderabad",
+    "cert_id_label": "Certificate No.",
+    "dignitary_1_name": "Dr. Rao",
+    "dignitary_1_title": "Director",
+    "dignitary_2_name": "Prof. Sharma",
+    "dignitary_2_title": "Dean",
+    "dignitary_3_name": "Ms. Iyer",
+    "dignitary_3_title": "Coordinator",
+    "footer_text": "abc@university.com"
+}

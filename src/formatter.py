@@ -6,11 +6,9 @@ def format_data(records):
 
         formatted.append({
 
-            "Name": r["name"].strip().title(),
+            "Name": r.get("name", "").strip().title(),
 
-            "Age": int(r["age"]),
-
-            "Email": r["email"].strip().lower()
+            "Email": r.get("email", "").strip().lower()
 
         })
 

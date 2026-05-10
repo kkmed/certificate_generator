@@ -27,7 +27,7 @@ WHITE      = (255, 255, 255)
 # ──────────────────────────────────────────────
 #  FONTS
 # ──────────────────────────────────────────────
-FONT_DIR = "fonts"
+FONT_DIR = "assets/fonts"
 
 def load_font(size, bold=False, italic=False):
     filemap = {

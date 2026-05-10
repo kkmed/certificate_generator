@@ -4,13 +4,10 @@ def validate_data(records):
 
     for record in records:
 
-        if not record["name"]:
+        if not record.get("name"):
             continue
 
-        if not str(record["age"]).isdigit():
-            continue
-
-        if "@" not in record["email"]:
+        if "@" not in record.get("email", ""):
             continue
 
         valid_data.append(record)
