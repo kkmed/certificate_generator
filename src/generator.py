@@ -114,7 +114,7 @@ def generate_certificate(data, image_path, output_path, style=None, layout=None)
 TEMPLATE_CONFIGS = {
     "1": {
         "description": "Template 1: Minimalist Layout",
-        "image_path": "templates/template.png",
+        "image_path": "classic",
         "layout": {},
         "style": {}
     },
