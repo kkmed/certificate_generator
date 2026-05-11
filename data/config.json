@@ -1,11 +1,11 @@
 {
-    "organization_name": "ABC University",
-    "organization_tagline": "Excellence in Education",
-    "certificate_title": "Certificate of Excellence",
+    "organization_name": "EFG University",
+    "organization_tagline": "Building Futures",
+    "certificate_title": "Cetificate of Appreciation",
     "subtitle": "This certificate is proudly presented to",
     "body_line": "for outstanding performance in",
-    "event_name": "Tech Workshop 2026",
-    "organized_by": "organized by ABC University",
+    "event_name": "Python Workshop 2026",
+    "organized_by": "organized by Mahindra University",
     "date_label": "Date",
     "date_value": "May 2026",
     "venue_label": "Venue",
@@ -17,5 +17,5 @@
     "dignitary_2_title": "Dean",
     "dignitary_3_name": "Ms. Iyer",
     "dignitary_3_title": "Coordinator",
-    "footer_text": "abc@university.com"
+    "footer_text": "mahindra@university.com"
 }

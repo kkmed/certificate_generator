@@ -8,6 +8,7 @@ from file_namer import generate_filename
 
 from generator import generate_certificate, TEMPLATE_CONFIGS
 from emailer import send_email
+import json
 
 def run_batch_generation(cert_data, template_id, generate_certs=True, send_emails=True):
     # STEP 1 → READ CSV
@@ -60,9 +61,12 @@ def run_batch_generation(cert_data, template_id, generate_certs=True, send_email
             print(f"\nCertificate generated for {student['Name']}")
 
         # SEND EMAIL
+        with open("data/config.json","r") as file:
+            data = json.load(file)
         if send_emails:
             send_email(
                 student["Email"],
                 student["Name"],
+                data["organization_name"],
                 output_path
             )

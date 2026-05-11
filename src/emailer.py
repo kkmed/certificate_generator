@@ -4,7 +4,7 @@ import os
 from email.message import EmailMessage
 
 
-def send_email(receiver_email, receiver_name, certificate_path):
+def send_email(receiver_email, receiver_name, organization_name, certificate_path):
 
     sender_email = os.environ.get("EMAIL_SENDER")
 
@@ -34,7 +34,7 @@ Congratulations!
 Please find your certificate attached with this email.
 
 Regards,
-ABC University
+{organization_name}
 """
     )
 
